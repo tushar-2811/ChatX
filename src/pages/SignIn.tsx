@@ -66,7 +66,7 @@ const SignIn = () => {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="Choose a Cool Name" {...field} />
+                <Input placeholder="Enter Username" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

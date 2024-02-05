@@ -1,6 +1,5 @@
 import LandingHero from '@/components/LandingHero'
 import {NavLink} from 'react-router-dom'
-import React from 'react'
 import { Button } from '@/components/ui/button'
 
 const LandingPage = () => {
