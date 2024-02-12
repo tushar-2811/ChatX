@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+import { authSelector } from '@/store/selectors/authSelector';
+import { useState } from 'react';
 
 
 
@@ -28,6 +31,22 @@ import { useNavigate } from 'react-router-dom';
 const Navbar = () => {
     const pathName = useLocation().pathname;
     const Navigate = useNavigate();
+    const setAuthState = useSetRecoilState(authSelector);
+    const [name , setName] = useState(localStorage.getItem("userName"));
+
+    const handleLogout = async() => {
+         try {
+            toast( "Logout Successful");
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userName");
+            setAuthState({isSignedIn : false});
+            Navigate("/");
+
+         } catch (error) {
+            console.log(error);
+            toast("error in log out");
+         }
+    }
     
     return (
         <div className='flex top-0 sticky items-center p-4 bg-black/10' >
@@ -44,7 +63,7 @@ const Navbar = () => {
             <div className='flex w-full justify-center'>
                 {
                     <Button variant={'premium'} >
-                       Tushar Rawat
+                      {name}
                     </Button>
                 }
             </div>
@@ -70,13 +89,8 @@ const Navbar = () => {
 
                             </DropdownMenuItem>
 
-                           
-
-                       
-
-
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => toast( "Logout Successful")} >
+                        <DropdownMenuItem onClick={handleLogout} >
                             <LogOut className="mr-2 h-4 w-4 text-red-500" />
                             <span>Log out</span>
                         </DropdownMenuItem>

@@ -1,6 +1,6 @@
-
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { NavLink, useNavigate, useNavigation } from 'react-router-dom'
+import { NavLink, useNavigate} from 'react-router-dom'
 import {
   Card,
   CardContent,
@@ -31,6 +31,8 @@ import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from 'axios'
 import { useState } from "react"
+import { useRecoilValue } from "recoil"
+import { authSelector } from "@/store/selectors/authSelector"
 
 
 
@@ -38,7 +40,16 @@ import { useState } from "react"
 const SignUp = () => {
   
   const [isLoading , setIsLoading] = useState(false);
+
   const router = useNavigate();
+  const getAuthState = useRecoilValue(authSelector);
+
+  useEffect(() => {
+    if(localStorage.getItem("authToken") && getAuthState.isSignedIn){
+         router("/app");
+    }
+ },[])
+
   const form = useForm<z.infer<typeof SignUpSchema>>({
     resolver: zodResolver(SignUpSchema),
     defaultValues: {

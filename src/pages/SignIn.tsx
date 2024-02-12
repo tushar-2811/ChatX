@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-
 import {
   Form,
   FormControl,
@@ -28,7 +27,9 @@ import {z} from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { toast } from "sonner"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRecoilValue, useSetRecoilState } from "recoil"
+import { authSelector } from "@/store/selectors/authSelector"
 
 
 
@@ -36,7 +37,17 @@ import { useState } from "react"
 const SignIn = () => {
  
  const [isLoading , setIsLoading] = useState(false);
+ const setAuthState = useSetRecoilState(authSelector);
  const router = useNavigate();
+ const getAuthState = useRecoilValue(authSelector);
+
+
+ useEffect(() => {
+    if(localStorage.getItem("authToken") && getAuthState.isSignedIn){
+         router("/app");
+    }
+ },[])
+
   const form = useForm<z.infer<typeof SignInSchema>>({
       resolver : zodResolver(SignInSchema),
       defaultValues : {
@@ -61,7 +72,9 @@ const SignIn = () => {
          return;
       }
       
-      localStorage.setItem("authToken" , response.data.token);  
+      localStorage.setItem("authToken" , response.data.token);
+      localStorage.setItem("userName" , response.data.user.username);
+      setAuthState({isSignedIn : true});
       router("/app");
       toast("Sign In Successful");
       setIsLoading(false);
