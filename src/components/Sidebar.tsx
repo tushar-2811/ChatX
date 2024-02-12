@@ -1,39 +1,35 @@
 "use client";
 import { cn } from '@/lib/utils';
-import {  ScanFace } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect , useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import '../style/ScrollStyle.css'
+import axios from 'axios';
+import { toast } from 'sonner';
 
-
-
-const contacts = [
-    {
-        name : "Tushar Rawat",
-        icon : ScanFace,
-        href : "/dashboard",
-        color : "text-sky-500",
-        id : "1"
-    },
-    {
-      name : "Tushar Rawat",
-      icon : ScanFace,
-      href : "/dashboard",
-      color : "text-sky-500",
-      id : "2"
-  },
- 
-
-  
-]
 
 const Sidebar = () => {
      const pathName = useLocation().pathname;
-    //  const [contacts , setContacts] = useState<any[]>([]);
+     const [contacts , setContacts] = useState<any>([]);
+     const [isLoading , setIsLoading] = useState(false);
      
      useEffect(() => {
         // get all contacts from api, and list them here
+        async function getAll() {
+           try {
+            setIsLoading(true);
+             const {data} = await axios.get("http://localhost:5000/api/v1/users/get-all");
+             setContacts(data.allUsers);
+             setIsLoading(false);
+             
+           } catch (error) {
+            console.log(error)
+            toast("error in getting users");
+            setIsLoading(false);
+           }        
+        }
+        getAll();
      },[])
+
+ 
 
   return (
     <div className='space-y-4 py-4 flex flex-col h-full 
@@ -51,24 +47,37 @@ const Sidebar = () => {
        </NavLink>
 
 
-        <div className='space-y-1'>
+       {
+        isLoading ? (
+          <>
+          <div>
+            ...loading
+          </div>
+          </>
+        ) : (
+          <>
+           <div className='space-y-1'>
             {
-              contacts.map((contact) => (
+              contacts.map((contact:any) => (
                 <NavLink 
                 to={`/app/chat/${contact.id}`} 
-                key={contact.href} 
-                className={cn("text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition" , pathName === `/app/chat/${contact.id}` ? "text-white bg-white/10 " : "text-zinc-400")}
+                key={contact.id} 
+                className={cn("text-md group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition" , pathName === `/app/chat/${contact.id}` ? "text-white bg-white/10 " : "text-zinc-400")}
                 >
                   
                   <div className='flex items-center flex-1' >
-                    <contact.icon className={cn("h-5 w-5 mr-3")} />
-                    {contact.name}
+                    <img src={contact.profilePicture} alt="" className='h-5 w-5 mr-3 rounded-full' />
+                    {/* <contact.profilePicture className={cn("h-5 w-5 mr-3")} /> */}
+                    {contact.username}
                   </div>
 
                 </NavLink>
               ))  
             }
         </div>
+          </>
+        )
+       }
 
       </div>
 

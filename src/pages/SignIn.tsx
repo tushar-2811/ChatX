@@ -61,7 +61,7 @@ const SignIn = () => {
          return;
       }
       
-      localStorage.setItem("authToken" , response.data.token)
+      localStorage.setItem("authToken" , response.data.token);  
       router("/app");
       toast("Sign In Successful");
       setIsLoading(false);
