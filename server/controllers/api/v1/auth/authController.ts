@@ -2,10 +2,10 @@ import {Request , Response} from 'express'
 import brcypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { SignInSchema, SignUpSchema } from '../../../../config/auth'
-import {PrismaClient} from '@prisma/client'
 import envConfig from '../../../../config/envConfig'
+import prismadb from '../../../../config/prismadb'
 
-const prisma = new PrismaClient();
+const prisma = prismadb;
 
 
 export const userRegisterController = async(req: Request , res:Response) => {

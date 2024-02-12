@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button"
-import {NavLink} from 'react-router-dom'
+import {NavLink, useNavigate} from 'react-router-dom'
 import {
   Card,
   CardContent,
@@ -11,12 +11,9 @@ import {
 } from "@/components/ui/card"
 
 
-
-
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,18 +21,22 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-import { SignInSchema, SignUpSchema } from "@/validators/auth"
+import { SignInSchema} from "@/validators/auth"
 
 import {useForm} from 'react-hook-form'
 import {z} from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
+import axios from "axios"
+import { toast } from "sonner"
+import { useState } from "react"
 
 
 
 
 const SignIn = () => {
-
-
+ 
+ const [isLoading , setIsLoading] = useState(false);
+ const router = useNavigate();
   const form = useForm<z.infer<typeof SignInSchema>>({
       resolver : zodResolver(SignInSchema),
       defaultValues : {
@@ -45,8 +46,31 @@ const SignIn = () => {
       }
   })
 
-  function onSubmit(data : z.infer<typeof SignInSchema>) {
-    console.log(data);
+ async function onSubmit(data : z.infer<typeof SignInSchema>) {
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`http://localhost:5000/api/v1/auth/sign-in` , {
+         username : data.userName,
+         password : data.password
+      });
+
+      if(!response.data.ok) {
+         toast(response.data.msg);
+         console.log(response.data.msg);
+         setIsLoading(false);
+         return;
+      }
+      
+      localStorage.setItem("authToken" , response.data.token)
+      router("/app");
+      toast("Sign In Successful");
+      setIsLoading(false);
+     
+    } catch (error) {
+      console.log("error while submitting form" , error);
+      toast("error while submitting form");
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -89,14 +113,14 @@ const SignIn = () => {
         />
 
 
-        <Button className="bg-black" type="submit">Enter the Room</Button>
+        <Button disabled={isLoading} className="bg-black" type="submit">Enter the Room</Button>
       </form>
     </Form>
       </CardContent>
       <CardFooter className="flex justify-center items-center gap-2">
          <p> Create a new Account ? </p>
          <NavLink to="/sign-up" >
-           <Button className="border-2 mx-2 text-transparent bg-clip-text bg-gradient-to-r  from-purple-400 to-pink-600" >
+           <Button disabled={isLoading} className="border-2 mx-2 text-transparent bg-clip-text bg-gradient-to-r  from-purple-400 to-pink-600" >
             Sign Up
           </Button>
          </NavLink>

@@ -1,7 +1,7 @@
 "use client";
 import { cn } from '@/lib/utils';
-import { Code,  CodeSquare,  Image,  ImageIcon, LayoutDashboard, MessageSquare, ScanFace, Settings, ThumbsUpIcon, Wallet, Wallet2Icon, WalletCardsIcon, WalletIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import {  ScanFace } from 'lucide-react';
+import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import '../style/ScrollStyle.css'
 

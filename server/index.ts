@@ -17,4 +17,6 @@ const server = app.listen(process.env.PORT , () => {
     console.log(`The server is up on port : ${process.env.PORT}`);
 })
 
+server;
+
 

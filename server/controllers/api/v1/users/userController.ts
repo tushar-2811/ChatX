@@ -1,7 +1,7 @@
 import { Request , Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import prismadb from "../../../../config/prismadb";
 
-const prisma = new PrismaClient();
+const prisma = prismadb;
 
 export const UsersController = async(req: Request , res:Response) => {
      try {

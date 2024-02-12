@@ -1,7 +1,7 @@
 import {z} from 'zod'
 
 export const SignUpSchema = z.object({
-    userName : z.string().min(3 , {
+    username : z.string().min(3 , {
         message : "Name is too short !"
     }).max(255),
 
@@ -14,7 +14,7 @@ export const SignUpSchema = z.object({
 })
 
 export const SignInSchema = z.object({
-    userName : z.string().min(3 , {
+    username : z.string().min(3 , {
         message : "Name is too short !"
     }).max(255),
     password : z.string().min(5 , {

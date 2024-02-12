@@ -11,19 +11,31 @@ datasource db {
 }
 
 
+
+
+
 model User {
-   id  String @id @default(auto()) @map("_id") @db.ObjectId
-   username String? @unique
-   email String? @unique
-   hashedPassword String?
-
-   
-
-
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  username        String?  @unique
+  email           String?  @unique
+  hashedPassword  String?
+  profilePicture  String   @default("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg")
+  chats           Chat[]
 }
 
-model Message{
-    id  String @id @default(auto()) @map("_id") @db.ObjectId
-    text String 
-    users User[]
+model Chat {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  users            User       @relation(fields: [usersId], references: [id], onDelete: Cascade)
+  usersId          String[]   @db.ObjectId
+  content          Messages[]
+}
+
+model Messages {
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
+  data             String
+  senderId         String  @db.ObjectId
+  recieverId       String  @db.ObjectId
+
+  chat             Chat    @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId           String  @db.ObjectId
 }

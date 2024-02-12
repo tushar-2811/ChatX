@@ -2,10 +2,8 @@
 import {
   Form,
   FormControl,
-
   FormField,
   FormItem,
-
 } from "@/components/ui/form"
 
 import { useForm } from 'react-hook-form'
@@ -30,6 +28,11 @@ const ChatFooter = () => {
 
     const onSubmit = async(data : z.infer<typeof conversationSchema>) => {
         console.log(data);
+
+        form.reset({
+          prompt : ""
+        });
+        
     }
   return (
     <div className="px-4 lg:px-8 ">
