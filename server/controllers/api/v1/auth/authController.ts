@@ -126,6 +126,7 @@ export const userLoginController = async(req: Request , res: Response) => {
             token : token,
             user : {
                 username : existingUserByUsername.username,
+                id : existingUserByUsername.id
             }
         })
         

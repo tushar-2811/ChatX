@@ -74,6 +74,7 @@ const SignIn = () => {
       
       localStorage.setItem("authToken" , response.data.token);
       localStorage.setItem("userName" , response.data.user.username);
+      localStorage.setItem("userID" , response.data.user.id);
       setAuthState({isSignedIn : true});
       router("/app");
       toast("Sign In Successful");

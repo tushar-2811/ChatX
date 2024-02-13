@@ -17,7 +17,11 @@ const Sidebar = () => {
            try {
             setIsLoading(true);
              const {data} = await axios.get("http://localhost:5000/api/v1/users/get-all");
-             setContacts(data.allUsers);
+
+             setContacts(data.allUsers.filter((user:any) => {
+                  return user.id !== localStorage.getItem("userID");
+             }));
+
              setIsLoading(false);
              
            } catch (error) {

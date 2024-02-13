@@ -39,6 +39,7 @@ const Navbar = () => {
             toast( "Logout Successful");
             localStorage.removeItem("authToken");
             localStorage.removeItem("userName");
+            localStorage.removeItem("userID");
             setAuthState({isSignedIn : false});
             Navigate("/");
 
