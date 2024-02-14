@@ -2,31 +2,54 @@ import { NextFunction, Request , Response } from "express";
 import prismadb from "../../../../config/prismadb";
 
 // add new message to db
-export const addMessageController = async(req: Request , res:Response ,next : NextFunction) => {
+export const sendMessageController = async(req: Request , res:Response ,next : NextFunction) => {
     try {
+        const {chatId} = req.params;
         const {fromUserId , toUserId , messageContent} = req.body;
-        const {conversationId} = req.params;
+
+        if(!messageContent || !chatId || !fromUserId) {
+            return res.status(501).json({
+                ok : false,
+                msg : "required data is missing"
+            })
+        }
 
         const newMessage = await prismadb.message.create({
             data : {
                 body : messageContent,
-                conversationId : conversationId,
+                conversationId : chatId,
                 senderId : fromUserId
+            },
+            include : {
+                sender : {
+                    select : {
+                        username : true
+                    }
+                }
             }
         })
 
-        if(!newMessage){
-           return res.status(401).json({
-            ok : false,
-            msg : "failed to add msg to database"
-           })
-        }
+        const existingConversation = await prismadb.conversation.findUnique({
+            where : {
+                id : chatId
+            }
+        })
+
+       const messageIds = existingConversation?.messagesIds || [];
+       await prismadb.conversation.update({
+            where : {
+                id : chatId
+            },
+            data : {
+                messagesIds : [...messageIds , newMessage.id]
+            }
+        })
 
         return res.status(201).json({
             ok : true,
-            msg : "Message added successfully"
+            msg : "new messsage created",
+            newMessage
         })
-
         
     } catch (error) {
         console.log("error while adding message to db" , error);
@@ -34,7 +57,39 @@ export const addMessageController = async(req: Request , res:Response ,next : Ne
     }
 }
 
-// get all messages
-export const getAllMessagesController = async(req:Request , REs:Response) => {
+// get all messages for a chat
+export const getAllMessagesController = async(req:Request , res:Response) => {
+      try {
+        const {chatId} = req.params;
 
+        const existingConversation = await prismadb.conversation.findUnique({
+            where : {
+                id : chatId
+            },
+            include : {
+                messages : {
+                    include : {
+                        sender : {
+                            select : {
+                                username : true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        return res.status(201).json({
+            ok : true,
+            msg : "all messages",
+            conversationMessages : existingConversation?.messages
+        })
+      } catch (error) {
+         console.log("error in fetching all messages of a chat" , error);
+         return res.status(501).json({
+            ok : false,
+            msg : "error in getting messages",
+            error
+         })
+      }
 }

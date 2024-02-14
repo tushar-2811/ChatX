@@ -14,8 +14,21 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ClipLoader } from "react-spinners";
+import { toast } from "sonner"
+import axios from "axios"
+import { useRecoilState } from "recoil"
+import { messagesSelector } from "@/store/selectors/messageSelector"
 
-const ChatFooter = () => {
+interface ChatFooterParams {
+  convoId ?: string 
+
+}
+
+const ChatFooter = ({convoId , }: ChatFooterParams) => {
+
+   const [messages , setMessages] = useRecoilState(messagesSelector);
+
     type PromptFormInput = z.infer<typeof conversationSchema>;
     const form = useForm<PromptFormInput>({
         resolver : zodResolver(conversationSchema),
@@ -27,12 +40,39 @@ const ChatFooter = () => {
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async(data : z.infer<typeof conversationSchema>) => {
-        console.log(data);
-
-        form.reset({
-          prompt : ""
-        });
+        try {
+          if(!convoId){
+             toast("no convo it");
+             return;
+          }
+          const response = await axios.post(`http://localhost:5000/api/v1/messages/send-new-message/${String(convoId)}` , {
+             messageContent : data.prompt,
+             fromUserId : String(localStorage.getItem("userID")),
+             toUserId : ""
+          })
         
+          if(response.data.ok) {
+            const newMessage = response.data.newMessage;
+            setMessages((prevState:any) => ({
+              ...prevState,
+              messages : [...prevState.messages , newMessage]
+            }))
+            toast("message send");
+
+          }else{
+            toast("couldn't send the message");
+          }
+          
+        } catch (error) {
+           console.log("error in sending message");
+           toast("error in sending message");
+        }finally{
+          form.reset({
+            prompt : ""
+          });
+          
+        }
+      
     }
   return (
     <div className="px-4 lg:px-8 ">
@@ -70,7 +110,7 @@ const ChatFooter = () => {
             )}
           />
           <Button className="col-span-12 lg:col-span-2 w-full bg-black " type="submit" disabled={isLoading} size="icon">
-            Send
+            Send {isLoading ? <ClipLoader color="white" size={30} className="mx-4" /> : ""}
           </Button>
         </form>
       </Form>
