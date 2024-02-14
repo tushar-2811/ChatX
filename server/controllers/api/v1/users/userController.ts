@@ -3,6 +3,7 @@ import prismadb from "../../../../config/prismadb";
 
 const prisma = prismadb;
 
+// get all users
 export const UsersController = async(req: Request , res:Response) => {
      try {
         const allUsers = await prisma.user.findMany();
@@ -22,3 +23,5 @@ export const UsersController = async(req: Request , res:Response) => {
         })
      }
 }
+
+

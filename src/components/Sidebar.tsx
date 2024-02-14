@@ -1,7 +1,7 @@
 "use client";
 import { cn } from '@/lib/utils';
-import { useEffect , useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useEffect , useMemo, useState } from 'react';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
 
@@ -10,6 +10,8 @@ const Sidebar = () => {
      const pathName = useLocation().pathname;
      const [contacts , setContacts] = useState<any>([]);
      const [isLoading , setIsLoading] = useState(false);
+
+     const params = useParams();
      
      useEffect(() => {
         // get all contacts from api, and list them here
