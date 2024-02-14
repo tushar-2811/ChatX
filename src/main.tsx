@@ -7,12 +7,12 @@ import { Toaster } from 'sonner'
 import {RecoilRoot} from 'recoil'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+ 
     <BrowserRouter>
     <RecoilRoot>
       <Toaster/>
        <App />
     </RecoilRoot>
     </BrowserRouter>
-  </React.StrictMode>,
+
 )

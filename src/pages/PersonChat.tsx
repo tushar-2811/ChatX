@@ -1,41 +1,132 @@
-import ChatFooter from "@/components/ChatFooter";
-import { useEffect, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue,  useRecoilState, useSetRecoilState } from "recoil";
 import { messagesSelector } from "@/store/selectors/messageSelector";
+import io from 'socket.io-client'
+
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+} from "@/components/ui/form"
+
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { conversationSchema } from '@/validators/text'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
+
+const ENDPOINT = "http://localhost:5000";
 
 
 const PersonChat = () => {
 
   const allMessages = useRecoilValue(messagesSelector);
-  const setMessages = useSetRecoilState(messagesSelector)
-  const [isLoading, setIsLoading] = useState(false);
-
-
+  const setMessages = useSetRecoilState(messagesSelector);
+  // const [messages , setMessages] = useRecoilState(messagesSelector);
+ 
   const params = useParams();
   const currentUserId = localStorage.getItem("userID");
   const convoId = params.id;
 
+  const socket = useMemo(() => {
+    return io(ENDPOINT);
+  } , [])
+
+ 
   useEffect(() => {
+    // socket.emit('setup' , currentUserId);
+
     async function getAllMessages() {
       try {
-        setIsLoading(true);
+
         const response = await axios.get(`http://localhost:5000/api/v1/messages/all-messages/${String(convoId)}`);
         setMessages({
           messages : response.data.conversationMessages
         });
-        setIsLoading(false);
- 
+
+
+        socket.emit("join-chat" , convoId);
       } catch (error) {
         console.log("error while getting all messages", error);
       } 
     }
     getAllMessages();
   }, [convoId])
+
+  useEffect(() => {
+    
+    socket.on("recieve-message" , (newMessage) => {
+      setMessages((prevState:any) => ({
+        ...prevState,
+        messages : [...prevState.messages , newMessage]
+      }))
+    } )
+   
+  }, [socket])
+
+  type PromptFormInput = z.infer<typeof conversationSchema>;
+  const form = useForm<PromptFormInput>({
+      resolver : zodResolver(conversationSchema),
+      defaultValues : {
+          prompt : ""
+      }
+  })
+
+  const isLoading = form.formState.isSubmitting;
+
+  const onSubmit = async(data : z.infer<typeof conversationSchema>) => {
+      try {
+        if(!convoId){
+           toast("no convo it");
+           return;
+        }
+        const response = await axios.post(`http://localhost:5000/api/v1/messages/send-new-message/${String(convoId)}` , {
+           messageContent : data.prompt,
+           fromUserId : String(localStorage.getItem("userID")),
+           toUserId : ""
+        })
+      
+        if(response.data.ok) {
+          const data = {
+             roomId : convoId,
+             message : response.data.newMessage
+          }
+          const newMessage = response.data.newMessage;
+          setMessages((prevState:any) => ({
+            ...prevState,
+            messages : [...prevState.messages , newMessage]
+          }))
+          socket.emit("send-message" , data);
+          toast("message send");
+
+        }else{
+          toast("couldn't send the message");
+        }
+        
+      } catch (error) {
+         console.log("error in sending message");
+         toast("error in sending message");
+      }finally{
+        form.reset({
+          prompt : ""
+        });
+        
+      }
+    
+  }
+
 
   return (
     <>
@@ -46,14 +137,10 @@ const PersonChat = () => {
         {/* Content area */}
         <div className="flex-1 overflow-y-hidden mx-4 max-w-[1024]">
           {/* Add your chat content here */}
-          {
-            isLoading ? (
-              <div className="flex justify-center items-center text-center mt-10">
-                <ClipLoader color="black" size={40} />
-              </div>
-            ) : (
+          
+           
               <>
-                <ScrollArea className="flex flex-col max-h-96 overflow-y-auto p-4">
+                <ScrollArea className="flex flex-col max-h-80 overflow-y-auto p-4">
                   {
                     allMessages && allMessages.messages.map((message: any) => {
                       return (
@@ -75,8 +162,8 @@ const PersonChat = () => {
                   }
                 </ScrollArea>
               </>
-            )
-          }
+            
+          
 
         </div>
 
@@ -84,7 +171,47 @@ const PersonChat = () => {
 
       </div>
       <div className="sticky bottom-2 ">
-        <ChatFooter convoId={convoId}  />
+      <div className="px-4 lg:px-8 ">
+    <div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="
+            rounded-lg 
+            border-2
+            border-black 
+            w-full 
+            p-4 
+            px-3 
+            md:px-6 
+            focus-within:shadow-sm
+            grid
+            grid-cols-12
+            gap-2
+          "
+        >
+          <FormField
+            name="prompt"
+            render={({ field }) => (
+              <FormItem className="col-span-12 lg:col-span-10">
+                <FormControl className="m-0 p-0">
+                  <Input
+                    className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent"
+                    disabled={isLoading}
+                    placeholder="Write message..."
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button className="col-span-12 lg:col-span-2 w-full bg-black " type="submit" disabled={isLoading} size="icon">
+            Send {isLoading ? <ClipLoader color="white" size={30} className="mx-4" /> : ""}
+          </Button>
+        </form>
+      </Form>
+    </div>
+    </div>
       </div>
     </>
   );

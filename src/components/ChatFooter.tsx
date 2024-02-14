@@ -22,10 +22,11 @@ import { messagesSelector } from "@/store/selectors/messageSelector"
 
 interface ChatFooterParams {
   convoId ?: string 
+  socket : any
 
 }
 
-const ChatFooter = ({convoId , }: ChatFooterParams) => {
+const ChatFooter = ({convoId , socket }: ChatFooterParams) => {
 
    const [messages , setMessages] = useRecoilState(messagesSelector);
 
@@ -52,6 +53,10 @@ const ChatFooter = ({convoId , }: ChatFooterParams) => {
           })
         
           if(response.data.ok) {
+            const data = {
+               roomId : convoId,
+               message : response.data.newMessage.body
+            }
             const newMessage = response.data.newMessage;
             setMessages((prevState:any) => ({
               ...prevState,
