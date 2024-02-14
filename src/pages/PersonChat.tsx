@@ -2,10 +2,14 @@ import ChatFooter from "@/components/ChatFooter";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
+interface PersonChatParams {
+   chat : any
+}
+
 const PersonChat = () => {
   const params = useParams();
-  const secondPersonId = params.id;
-  const firstPersonId = localStorage.getItem("userID");
+  const currentUserId = localStorage.getItem("userID");
+  const convoId = params.id;
 
   const sendMessage = async() => {
      try {
@@ -24,8 +28,8 @@ const PersonChat = () => {
       {/* Content area */}
       <div className="flex-1 overflow-y-auto mx-4 max-w-[1024]">
         {/* Add your chat content here */}
-        <p> {firstPersonId} </p>
-        <p> {secondPersonId} </p>
+        <p> {currentUserId} </p>
+        <p> {convoId} </p>
           
       </div>
 

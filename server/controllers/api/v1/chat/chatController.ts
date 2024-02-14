@@ -1,4 +1,4 @@
-import e, { Request , Response } from "express";
+import  { Request , Response } from "express";
 import prismadb from "../../../../config/prismadb";
 
 
@@ -23,17 +23,33 @@ export const accessChatController = async(req:Request , res:Response) => {
                 }
             },
             include : {
-               messages : true
+                users : {
+                    select : {
+                        id: true,
+                        username : true,
+                        profilePicture : true,
+                        
+                    }
+                }
             }
                
         });
 
+
+
         if (existingChat) {
+            const anotherUser = existingChat.users.filter((user:any) => {
+                return user.id !== currentUserId
+            })
+            const data = {
+                convoId : existingChat?.id,
+                anotherUser : anotherUser[0]     
+            }
             return res.status(201).json({
                 ok : true,
                 newChatCreated : false,
                 msg : "chat exist already",
-                chat : existingChat
+                chats : data
             }) 
         }
 
@@ -46,17 +62,35 @@ export const accessChatController = async(req:Request , res:Response) => {
                     ]
                 },
                 userIds : [currentUserId , anotherUserId]
+            },
+            include : {
+                users : {
+                    select : {
+                        id: true,
+                        username : true,
+                        profilePicture : true,
+                        
+                    }
+                }
             }
         });
 
-       
+        const anotherUser = newChat.users.filter((user:any) => {
+            return user.id !== currentUserId
+        })
+        const data = {
+            convoId : newChat?.id,
+            anotherUser : anotherUser[0]     
+        }
         return res.status(201).json({
             ok : true,
             newChatCreated : true,
-            msg : "new chat created",
-            chat : newChat
-        })
+            msg : "new Chat created",
+            chats : data
+        }) 
 
+       
+    
         
     } catch (error) {
         console.log("error in accessing chat" , error);
@@ -71,7 +105,7 @@ export const accessChatController = async(req:Request , res:Response) => {
 
 
 
-// fetch all chats for a user
+// fetch all chats for a user (conversation Id's and another user )
 export const getChatController = async(req:Request , res: Response) => {
     try {
         const {currentUserId} = req.params;
@@ -83,11 +117,20 @@ export const getChatController = async(req:Request , res: Response) => {
             include : {
                 conversations : {
                     include : {
-                        messages : true
+                        users : {
+                            select : {
+                                id: true,
+                                username : true,
+                                profilePicture : true,
+                                
+                            }
+                        }
                     }
                 }
             }
         })
+
+        
 
         if(!existingUser) {
             return res.status(401).json({
@@ -96,10 +139,20 @@ export const getChatController = async(req:Request , res: Response) => {
             })
         }
 
+        const existingConversationData = existingUser.conversations.map((convo: any) => {
+             const anotherUser = convo.users.filter((user:any) => {
+                return user.id !== currentUserId
+            })
+            return {
+                convoId : convo.id,
+                anotherUser : anotherUser[0]
+            }
+        })
+
         return res.status(201).json({
             ok : true,
             msg : "all chats found",
-            chats : existingUser.conversations
+            chats : existingConversationData
         })
 
     } catch (error) {
