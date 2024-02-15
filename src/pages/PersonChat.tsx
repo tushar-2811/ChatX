@@ -27,9 +27,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 
-const ENDPOINT = "http://localhost:5000";
-
-
 const PersonChat = () => {
 
 
@@ -42,7 +39,7 @@ const PersonChat = () => {
   const convoId = params.id;
 
   const socket = useMemo(() => {
-    return io(ENDPOINT);
+    return io("http://localhost:5000");
   } , [])
 
  
