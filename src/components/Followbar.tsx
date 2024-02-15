@@ -12,7 +12,7 @@ const FollowBar = () => {
 
     useEffect(() => {
         const fetchData = async() => {
-          const {data} = await axios.get("http://localhost:5000/api/v1/users/get-all");
+          const {data} = await axios.get("https://chatx-server-1.vercel.app/api/v1/users/get-all");
           setUsers(data.allUsers.filter((user:any) => {
             return user.id !== localStorage.getItem("userID");
           }));

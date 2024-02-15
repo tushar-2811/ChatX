@@ -2,7 +2,7 @@ import axios from "axios";
 import profile from "../assets/placeholder.png"
 
 
-import { useRecoilValue, useSetRecoilState , useRecoilState } from 'recoil';
+import {  useRecoilState } from 'recoil';
 import { sidebarSelector } from '@/store/selectors/sidebarSelector';
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +21,7 @@ const Avatar:React.FC<AvatarProps> = ({userId , isLarge ,hasBorder , profileImag
   const hanldeClick = async() => {
    
        try {
-          const response = await axios.get(`http://localhost:5000/api/v1/chats/get-chats/${String(localStorage.getItem("userID"))}/${String(userId)}`);
+          const response = await axios.get(`https://chatx-server-1.vercel.app/api/v1/chats/get-chats/${String(localStorage.getItem("userID"))}/${String(userId)}`);
 
           if(response.data.ok && response.data.newChatcreated){
             setConversations((oldConversations: any) => {

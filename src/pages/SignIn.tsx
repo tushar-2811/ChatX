@@ -60,7 +60,7 @@ const SignIn = () => {
  async function onSubmit(data : z.infer<typeof SignInSchema>) {
     try {
       setIsLoading(true);
-      const response = await axios.post(`http://localhost:5000/api/v1/auth/sign-in` , {
+      const response = await axios.post(`https://chatx-server-1.vercel.app/api/v1/auth/sign-in` , {
          username : data.userName,
          password : data.password
       });

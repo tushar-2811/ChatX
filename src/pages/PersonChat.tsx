@@ -1,11 +1,11 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo} from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useRecoilValue,  useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilValue,  useSetRecoilState } from "recoil";
 import { messagesSelector } from "@/store/selectors/messageSelector";
 import io from 'socket.io-client'
 
@@ -32,6 +32,7 @@ const ENDPOINT = "http://localhost:5000";
 
 const PersonChat = () => {
 
+
   const allMessages = useRecoilValue(messagesSelector);
   const setMessages = useSetRecoilState(messagesSelector);
   // const [messages , setMessages] = useRecoilState(messagesSelector);
@@ -51,7 +52,7 @@ const PersonChat = () => {
     async function getAllMessages() {
       try {
 
-        const response = await axios.get(`http://localhost:5000/api/v1/messages/all-messages/${String(convoId)}`);
+        const response = await axios.get(`https://chatx-server-1.vercel.app/api/v1/messages/all-messages/${String(convoId)}`);
         setMessages({
           messages : response.data.conversationMessages
         });
@@ -76,6 +77,8 @@ const PersonChat = () => {
    
   }, [socket])
 
+ 
+
   type PromptFormInput = z.infer<typeof conversationSchema>;
   const form = useForm<PromptFormInput>({
       resolver : zodResolver(conversationSchema),
@@ -92,7 +95,7 @@ const PersonChat = () => {
            toast("no convo it");
            return;
         }
-        const response = await axios.post(`http://localhost:5000/api/v1/messages/send-new-message/${String(convoId)}` , {
+        const response = await axios.post(`https://chatx-server-1.vercel.app/api/v1/messages/send-new-message/${String(convoId)}` , {
            messageContent : data.prompt,
            fromUserId : String(localStorage.getItem("userID")),
            toUserId : ""
@@ -135,12 +138,12 @@ const PersonChat = () => {
 
 
         {/* Content area */}
-        <div className="flex-1 overflow-y-scroll mx-4 max-w-[1024]">
+        <div className="flex-1 overflow-y-scroll scroll-auto mx-4 max-w-[1024]" >
           {/* Add your chat content here */}
           
            
               <>
-                <ScrollArea className="flex flex-col p-4">
+                <ScrollArea className="flex flex-col p-4" >
                   {
                     allMessages && allMessages.messages.map((message: any) => {
                       return (

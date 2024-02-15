@@ -46,7 +46,7 @@ const ChatFooter = ({convoId , socket }: ChatFooterParams) => {
              toast("no convo it");
              return;
           }
-          const response = await axios.post(`http://localhost:5000/api/v1/messages/send-new-message/${String(convoId)}` , {
+          const response = await axios.post(`https://chatx-server-1.vercel.app/api/v1/messages/send-new-message/${String(convoId)}` , {
              messageContent : data.prompt,
              fromUserId : String(localStorage.getItem("userID")),
              toUserId : ""

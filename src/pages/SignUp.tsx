@@ -16,7 +16,6 @@ import { toast } from "sonner"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -63,7 +62,7 @@ const SignUp = () => {
   async function onSubmit(data: z.infer<typeof SignUpSchema>) {
     try {
       setIsLoading(true);
-      const response = await axios.post(`http://localhost:5000/api/v1/auth/sign-up`, {
+      const response = await axios.post(`https://chatx-server-1.vercel.app/api/v1/auth/sign-up`, {
         email: data.email,
         username: data.userName,
         password: data.password

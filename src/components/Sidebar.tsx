@@ -22,7 +22,7 @@ const Sidebar = () => {
         async function getAll() {
            try {
             setIsLoading(true);
-             const {data} = await axios.get(`http://localhost:5000/api/v1/chats/my-chats/${String(localStorage.getItem("userID"))}`);
+             const {data} = await axios.get(`https://chatx-server-1.vercel.app/api/v1/chats/my-chats/${String(localStorage.getItem("userID"))}`);
 
              setConversations({
               chats : data.chats
