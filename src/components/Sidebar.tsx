@@ -1,7 +1,7 @@
 "use client";
 import { cn } from '@/lib/utils';
 import { useEffect ,  useState } from 'react';
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useLocation} from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -15,7 +15,7 @@ const Sidebar = () => {
      const conversations = useRecoilValue(sidebarSelector);
      const setConversations = useSetRecoilState(sidebarSelector);
 
-     const params = useParams();
+
      
      useEffect(() => {
         // get all contacts from api, and list them here

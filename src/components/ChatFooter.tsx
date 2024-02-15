@@ -17,18 +17,17 @@ import { Button } from '@/components/ui/button';
 import { ClipLoader } from "react-spinners";
 import { toast } from "sonner"
 import axios from "axios"
-import { useRecoilState } from "recoil"
+import {  useSetRecoilState } from "recoil"
 import { messagesSelector } from "@/store/selectors/messageSelector"
 
 interface ChatFooterParams {
   convoId ?: string 
-  socket : any
-
 }
 
-const ChatFooter = ({convoId , socket }: ChatFooterParams) => {
+const ChatFooter = ({convoId }: ChatFooterParams) => {
 
-   const [messages , setMessages] = useRecoilState(messagesSelector);
+  //  const [messages , setMessages] = useRecoilState(messagesSelector);
+   const setMessages = useSetRecoilState(messagesSelector);
 
     type PromptFormInput = z.infer<typeof conversationSchema>;
     const form = useForm<PromptFormInput>({
@@ -53,10 +52,10 @@ const ChatFooter = ({convoId , socket }: ChatFooterParams) => {
           })
         
           if(response.data.ok) {
-            const data = {
-               roomId : convoId,
-               message : response.data.newMessage.body
-            }
+            // const data = {
+            //    roomId : convoId,
+            //    message : response.data.newMessage.body
+            // }
             const newMessage = response.data.newMessage;
             setMessages((prevState:any) => ({
               ...prevState,

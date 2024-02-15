@@ -23,8 +23,6 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { authSelector } from '@/store/selectors/authSelector';
-import { useState } from 'react';
-
 
 
 
@@ -32,7 +30,7 @@ const Navbar = () => {
     const pathName = useLocation().pathname;
     const Navigate = useNavigate();
     const setAuthState = useSetRecoilState(authSelector);
-    const [name , setName] = useState(localStorage.getItem("userName"));
+    // const [name , setName] = useState(localStorage.getItem("userName"));
 
     const handleLogout = async() => {
          try {
@@ -64,7 +62,7 @@ const Navbar = () => {
             <div className='flex w-full justify-center'>
                 {
                     <Button variant={'premium'} >
-                      {name}
+                      {localStorage.getItem("userName")}
                     </Button>
                 }
             </div>

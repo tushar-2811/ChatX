@@ -2,7 +2,7 @@ import axios from "axios";
 import profile from "../assets/placeholder.png"
 
 
-import {  useRecoilState } from 'recoil';
+import {  useSetRecoilState } from 'recoil';
 import { sidebarSelector } from '@/store/selectors/sidebarSelector';
 import { useNavigate } from "react-router-dom";
 
@@ -11,11 +11,11 @@ interface AvatarProps {
     isLarge ?: boolean;
     hasBorder ?: boolean;
     profileImage ?: string;
-    name : string
 }
 
-const Avatar:React.FC<AvatarProps> = ({userId , isLarge ,hasBorder , profileImage , name}) => {
-  const [conversations, setConversations] = useRecoilState(sidebarSelector);
+const Avatar:React.FC<AvatarProps> = ({userId , isLarge ,hasBorder , profileImage }) => {
+  // const [conversations, setConversations] = useRecoilState(sidebarSelector);
+  const setConversations  =  useSetRecoilState(sidebarSelector)
   const Navigate = useNavigate();
 
   const hanldeClick = async() => {
