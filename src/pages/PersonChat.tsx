@@ -135,12 +135,12 @@ const PersonChat = () => {
 
 
         {/* Content area */}
-        <div className="flex-1 overflow-y-hidden mx-4 max-w-[1024]">
+        <div className="flex-1 overflow-y-scroll mx-4 max-w-[1024]">
           {/* Add your chat content here */}
           
            
               <>
-                <ScrollArea className="flex flex-col max-h-80 overflow-y-auto p-4">
+                <ScrollArea className="flex flex-col p-4">
                   {
                     allMessages && allMessages.messages.map((message: any) => {
                       return (
