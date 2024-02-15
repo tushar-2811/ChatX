@@ -8,21 +8,21 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { sidebarSelector } from '@/store/selectors/sidebarSelector';
 
 
+
+
 const Sidebar = () => {
      const pathName = useLocation().pathname;
     //  const [conversations ,setConversations] = useState<any>([]);
      const [isLoading , setIsLoading] = useState(false);
      const conversations = useRecoilValue(sidebarSelector);
      const setConversations = useSetRecoilState(sidebarSelector);
-
-
-     
+ 
      useEffect(() => {
         // get all contacts from api, and list them here
         async function getAll() {
            try {
             setIsLoading(true);
-             const {data} = await axios.get(`https://chatx-server-1.vercel.app/api/v1/chats/my-chats/${String(localStorage.getItem("userID"))}`);
+             const {data} = await axios.get(`http://localhost:5000/api/v1/chats/my-chats/${String(localStorage.getItem("userID"))}`);
 
              setConversations({
               chats : data.chats

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useRecoilValue,  useSetRecoilState } from "recoil";
+import { useRecoilValue,  useRecoilState} from "recoil";
 import { messagesSelector } from "@/store/selectors/messageSelector";
 import io from 'socket.io-client'
 
@@ -34,8 +34,8 @@ const PersonChat = () => {
 
 
   const allMessages = useRecoilValue(messagesSelector);
-  const setMessages = useSetRecoilState(messagesSelector);
-  // const [messages , setMessages] = useRecoilState(messagesSelector);
+  // const setMessages = useSetRecoilState(messagesSelector);
+  const [messages , setMessages] = useRecoilState(messagesSelector);
  
   const params = useParams();
   const currentUserId = localStorage.getItem("userID");
@@ -51,8 +51,7 @@ const PersonChat = () => {
 
     async function getAllMessages() {
       try {
-
-        const response = await axios.get(`https://chatx-server-1.vercel.app/api/v1/messages/all-messages/${String(convoId)}`);
+        const response = await axios.get(`http://localhost:5000/api/v1/messages/all-messages/${String(convoId)}`);
         setMessages({
           messages : response.data.conversationMessages
         });
@@ -67,7 +66,6 @@ const PersonChat = () => {
   }, [convoId])
 
   useEffect(() => {
-    
     socket.on("recieve-message" , (newMessage) => {
       setMessages((prevState:any) => ({
         ...prevState,
@@ -75,7 +73,7 @@ const PersonChat = () => {
       }))
     } )
    
-  }, [socket])
+  },[socket , setMessages])
 
  
 
@@ -95,7 +93,7 @@ const PersonChat = () => {
            toast("no convo it");
            return;
         }
-        const response = await axios.post(`https://chatx-server-1.vercel.app/api/v1/messages/send-new-message/${String(convoId)}` , {
+        const response = await axios.post(`http://localhost:5000/api/v1/messages/send-new-message/${String(convoId)}` , {
            messageContent : data.prompt,
            fromUserId : String(localStorage.getItem("userID")),
            toUserId : ""

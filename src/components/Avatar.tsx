@@ -2,9 +2,10 @@ import axios from "axios";
 import profile from "../assets/placeholder.png"
 
 
-import {  useSetRecoilState } from 'recoil';
+import {  useSetRecoilState , useRecoilValue } from 'recoil';
 import { sidebarSelector } from '@/store/selectors/sidebarSelector';
 import { useNavigate } from "react-router-dom";
+
 
 interface AvatarProps {
     userId : string;
@@ -13,27 +14,29 @@ interface AvatarProps {
     profileImage ?: string;
 }
 
+
+
 const Avatar:React.FC<AvatarProps> = ({userId , isLarge ,hasBorder , profileImage }) => {
-  // const [conversations, setConversations] = useRecoilState(sidebarSelector);
-  const setConversations  =  useSetRecoilState(sidebarSelector)
+  const conversations = useRecoilValue(sidebarSelector);
+  const setConversations = useSetRecoilState(sidebarSelector);
   const Navigate = useNavigate();
 
-  const hanldeClick = async() => {
+  const handleClick = async() => {
    
        try {
-          const response = await axios.get(`https://chatx-server-1.vercel.app/api/v1/chats/get-chats/${String(localStorage.getItem("userID"))}/${String(userId)}`);
+          const response = await axios.get(`http://localhost:5000/api/v1/chats/get-chats/${String(localStorage.getItem("userID"))}/${String(userId)}`);
 
-          if(response.data.ok && response.data.newChatcreated){
-            setConversations((oldConversations: any) => {
-              return {
-                ...oldConversations,
-                chats: [...oldConversations.chats, response.data.chats],
-              };
-            });
-           
+          if(response.data.ok ){
+            if(response.data.newChatCreated){
+              const newConversation = [...conversations.chats, response.data.chats];
+              setConversations({
+                chats: newConversation,
+              });
+            }
+            console.log("conversation" , conversations);
             Navigate(`/app/chat/${response.data.chats.convoId}`)
-            
           }
+         
 
        } catch (error) {
          console.log("error in starting new chat", error);
@@ -53,7 +56,7 @@ const Avatar:React.FC<AvatarProps> = ({userId , isLarge ,hasBorder , profileImag
      cursor-pointer    
     `}>
 
-      <button onClick={hanldeClick}>
+      <button onClick={handleClick}>
         <img
         height={isLarge ? 'h-32' : 'h-12'}  
         width={isLarge ? 'w-32' : 'w-12' }
